@@ -6,9 +6,10 @@ import { Button } from "@react-native-material/core";
 import { useFocusEffect } from "@react-navigation/native";
 
 export default function DogBowl({ navigation }) {
-  const less = require("./../assets/images/less.png");
+  const empty = require("./../assets/images/empty.png");
+  const half = require("./../assets/images/half.png");
   const full = require("./../assets/images/full.png");
-  const [choice, setSelected] = useState(less);
+  const [choice, setSelected] = useState(empty);
   const [buffering, setBuffering] = useState(false);
 
   const options = {
@@ -50,8 +51,10 @@ export default function DogBowl({ navigation }) {
             },
           });
         } else {
-          alert("Le numéro de gamelle n'est pas enregistré en base, veuillez réessayer.");
-            navigation.replace("Homepage");
+          alert(
+            "Le numéro de gamelle n'est pas enregistré en base, veuillez réessayer."
+          );
+          navigation.replace("Homepage");
         }
       });
       return () => {
@@ -65,8 +68,10 @@ export default function DogBowl({ navigation }) {
     console.log(message.payloadString);
     let returnVal = parseInt(message.payloadString, 10);
     if (returnVal == 0) {
-      setSelected(less);
-    } else if (returnVal == 1200) {
+      setSelected(empty);
+    } else if (returnVal < 700 && returnVal > 0) {
+      setSelected(half);
+    } else if (returnVal >= 700) {
       setSelected(full);
       setBuffering(false);
     }
@@ -93,7 +98,7 @@ export default function DogBowl({ navigation }) {
         style={styles.button}
         title={buffering ? "Remplissage..." : "Wouaf !"}
         onPress={() => refillBowl()}
-        disabled={(choice == full) | buffering}
+        disabled={(choice != empty) | buffering}
       />
     </View>
   );
