@@ -12,11 +12,11 @@ export default function DogBowl({ navigation }) {
   const [choice, setSelected] = useState(empty);
   const [buffering, setBuffering] = useState(false);
 
-  const options = {
+  const [options, setOptions] = useState({
     host: "test.mosquitto.org",
     path: "",
     port: 8080,
-  };
+  })
 
   init({
     size: 10000,
@@ -67,23 +67,20 @@ export default function DogBowl({ navigation }) {
   function onMessageArrived(message) {
     console.log(message.payloadString);
     let returnVal = parseInt(message.payloadString, 10);
-    if (returnVal == 0) {
+    if (returnVal < 100) {
       setSelected(empty);
-    } else if (returnVal < 700 && returnVal > 0) {
+    } else if (returnVal < 135 && returnVal > 0) {
       setSelected(half);
-    } else if (returnVal >= 700) {
+    } else if (returnVal >= 135) {
       setSelected(full);
       setBuffering(false);
     }
   }
 
   const refillBowl = () => {
-    let localMessage = new Paho.MQTT.Message("refill");
     try {
-      localMessage.destinationName = options.path;
-      console.log("Message : \n" + localMessage.payloadString);
       console.log("Client : \n" + client.isConnected());
-      client.send(localMessage);
+      client.publish(options.path, "refill");
       setBuffering(true);
     } catch (error) {
       console.error(error);
