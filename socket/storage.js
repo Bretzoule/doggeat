@@ -1,49 +1,20 @@
-const admin = require('firebase-admin');
-const serviceAccount = require('./serviceAccountKey.json');
+"use strict";
+const admin = require("firebase-admin");
+const serviceAccount = require("./serviceAccountKey.json");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
-
 const db = admin.firestore();
 
+module.exports.getDeviceMQTTTopic = async function (doggeatDeviceID) {
+  const snapshot = await db.collection("/doggeatDevice*").get();
+  snapshot.docs.filter((doc) => doc.id == doggeatDeviceID);
+  return snapshot.docs[0].data().mqtt_topic;
+};
 
-module.exports.registerSensor = async function (address) {
-
-  const docRef = db.collection('sensors').doc(address);
-
-  const sensor = {
-    address: address,
-    date: Date.now(),
-  }
-
-  await docRef.get().then((snapshotDoc)=> {
-    if (!snapshotDoc.exists)
-      docRef.set(sensor);
-    else
-      docRef.update(sensor);
-  })
-}
-
-module.exports.registerSample = async function (address, sample) {
-
-  const docRef = db.collection('sensors').doc(address)
-    .collection('samples').doc(Date.now().toString());
-
-  const data = {
-    value: sample,
-    date: Date.now(),
-  }
-  await docRef.set(data);
-
-
-}
-
-module.exports.listSensors = function () {
-
-  const docRef = db.collection('sensors');
-
-  return docRef.get()
-
-}
-
+module.exports.checkForDevice = async (doggeatDeviceID) => {
+  const snapshot = await db.collection("/doggeatDevice*").get();
+  snapshot.docs.filter((doc) => doc.id == doggeatDeviceID);
+  return !snapshot.empty;
+};
