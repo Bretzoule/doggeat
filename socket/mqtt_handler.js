@@ -14,7 +14,6 @@ module.exports.init_mqtt = (doggeatDeviceID) => {
       });
     });
     client.on("message", function (topic, message) {
-      console.log(message.toString());
       if (topic === mqtt_topic && message.toString() === "refill") {
         xbee_handler.sendRefillRequest();
       }
