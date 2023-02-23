@@ -81,7 +81,7 @@ export default function DogBowl({ navigation }) {
     try {
       console.log("Client : \n" + client.isConnected());
       client.publish(options.path, "refill");
-      //  setBuffering(true);
+      setBuffering(true);
     } catch (error) {
       console.error(error);
     }
